@@ -24,8 +24,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def tick(job_id):
-    print(f'!!!!!!!!!!!!!!!! Tick! call by job {job_id}')
+def scan_cpu_rate(job_id):
+    logging.info(f'!!!!!!!!!!!!!!!! Tick! call by job {job_id}')
+
+    cpu_rate = psutil.cpu_percent(interval=1)
+
+    logging.info(f"cpu_rate = {cpu_rate}")
 
 
 class CPURateResponse(BaseModel):
@@ -69,8 +73,8 @@ async def pickle_schedule():
     logger.info("Disabled Schedule")
 
 
-@app.post("/enable_cpu_scanner/", response_model=CPURateResponse, tags=["API"])
-def enable_cpu_scanner():
+@app.post("/get_cpu_rate/", response_model=CPURateResponse, tags=["API"])
+def get_cpu_rate():
     cpu_rate = psutil.cpu_percent(interval=1)
 
     logging.info(f"cpu_rate = {cpu_rate}")
@@ -83,7 +87,7 @@ def set_cpu_scanner_job():
     random_suffix = uuid.uuid1()
     job_id = str(random_suffix)
 
-    cpu_scanner_job = Schedule.add_job(tick, 'interval', seconds=30, id=job_id, args=[job_id])
+    cpu_scanner_job = Schedule.add_job(scan_cpu_rate, 'interval', seconds=30, id=job_id, args=[job_id])
 
     job_id = cpu_scanner_job.id
     logging.info(f"set cpu scanner job, id = {job_id}")
