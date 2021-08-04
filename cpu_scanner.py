@@ -15,11 +15,18 @@ import psutil
 from datetime import datetime
 import os
 
+import ray
+
+import time
+
+ray.init(address="192.168.1.10:6379")
 
 # Global Variables
 app = FastAPI(title="APP for demostrating integration with FastAPI and APSCheduler", version="2020.11.1",
               description="An Example of Scheduling CPU scanner info periodically")
+
 Schedule = None
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -51,13 +58,15 @@ async def load_schedule_or_create_blank():
     Instatialise the Schedule Object as a Global Param and also load existing Schedules from SQLite
     This allows for persistent schedules across server restarts.
     """
+    print("#####startup event is called.")
+
     global Schedule
     try:
-        jobstores = {
-            'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
-        }
-        Schedule = AsyncIOScheduler(jobstores=jobstores)
-        Schedule.start()
+        # jobstores = {
+        #     'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
+        # }
+        # Schedule = AsyncIOScheduler(jobstores=jobstores)
+        # Schedule.start()
         logger.info("Created Schedule Object")
     except:
         logger.error("Unable to Create Schedule Object")
@@ -68,14 +77,33 @@ async def pickle_schedule():
     """
     An Attempt at Shutting down the schedule to avoid orphan jobs
     """
+    print("#####shutdown event is called.")
+
     global Schedule
     Schedule.shutdown()
     logger.info("Disabled Schedule")
 
 
+@ray.remote
+def get_cpu_rate_on_ray():
+    logging.info("get_cpu_rate_on_ray called.")
+    print("get_cpu_rate_on_ray called. !!")
+
+    time.sleep(10)
+
+    cpu_rate = psutil.cpu_percent(interval=1)
+
+    logging.info(f"cpu_rate = {cpu_rate}")
+
+    return cpu_rate
+
 @app.post("/get_cpu_rate/", response_model=CPURateResponse, tags=["API"])
 def get_cpu_rate():
-    cpu_rate = psutil.cpu_percent(interval=1)
+    future = get_cpu_rate_on_ray.remote()
+
+    logging.info(future)
+
+    cpu_rate = ray.get(future)
 
     logging.info(f"cpu_rate = {cpu_rate}")
 

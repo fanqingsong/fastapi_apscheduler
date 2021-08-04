@@ -10,8 +10,53 @@ uvicorn ssl_check:app
 
 # cpu scanner
 
-## command:
+## run:
+### start ray cluster
+
+start headnode
+```
+ray start --head
+```
+
+Get the output
+```
+root@XXXXXXX:~/win10/mine/fastapi_apscheduler# ray start --head
+Local node IP: 192.168.1.10
+2021-08-04 18:48:32,942 INFO services.py:1166 -- View the Ray dashboard at http://localhost:8265
+
+--------------------
+Ray runtime started.
+--------------------
+
+Next steps
+  To connect to this Ray runtime from another node, run
+    ray start --address='192.168.1.10:6379' --redis-password='5241590000000000'
+
+  Alternatively, use the following Python code:
+    import ray
+    ray.init(address='auto', _redis_password='5241590000000000')
+
+  If connection fails, check your firewall settings and network configuration.
+
+  To terminate the Ray runtime, run
+    ray stop
+```
+
+Start workder node which may locate in a different machine.
+```
+ray start --address='192.168.1.10:6379'
+```
+
+reference to  https://docs.ray.io/en/master/configure.html
+https://docs.ray.io/en/releases-0.8.5/using-ray-on-a-cluster.html
+
+### start fastapi server
 uvicorn cpu_scanner:app --reload
+
+Then go to browser, access the swagger page to test API:
+http://127.0.0.1:8000/docs
+
+
 
 ## Description:
 To demostrating how to use fastapi and apscheduler
