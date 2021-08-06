@@ -20,7 +20,7 @@ import ray
 
 import time
 
-ray.init(address="172.20.10.4:6379")
+ray.init(address="192.168.1.10:6379")
 
 # Global Variables
 app = FastAPI(title="APP for demostrating integration with FastAPI and APSCheduler", version="2020.11.1",
@@ -56,7 +56,7 @@ async def load_schedule_or_create_blank():
     global Schedule
     try:
         jobstores = {
-            'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
+            'default': SQLAlchemyJobStore(url='sqlite:///../store/jobs.sqlite')
         }
         Schedule = AsyncIOScheduler(jobstores=jobstores)
         Schedule.start()
@@ -95,7 +95,7 @@ def get_cpu_rate_on_ray():
     return cpu_rate
 
 async def scan_cpu_rate(job_id):
-    logging.info(f'!!!!!!!!!!!!!!!! Tick! call by apscheduler job {job_id}')
+    logging.info(f'###!!!!!!!!!!!!! Tick! call by apscheduler job {job_id}')
 
     future = get_cpu_rate_on_ray.remote()
 

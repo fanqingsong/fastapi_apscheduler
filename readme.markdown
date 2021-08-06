@@ -5,19 +5,47 @@ With the help of fastapi and apscheduler, implement API to get cpu rate and set 
 reference:
 https://ahaw021.medium.com/scheduled-jobs-with-fastapi-and-apscheduler-5a4c50580b0e
 
+# Architecture
+
+Seperate workload from fastapi server, in order to prevent the server from being too busy.
+
+Select APScheduler as time policy manager.
+
+Select Ray as logic node to execute workload.
+
+The call from fastapi or apscheduler to ray cluster is asynchronous, so all the communication is reactive.
+
+![components](pics/architect.png)
+
+# Description:
+To demostrating how to use fastapi and apscheduler
+
+Requirements:
+previde API to get CPU rate, and get it periodically
+
+(1) get_cpu_rate -- get current cpu rate by this call
+
+(2) set_cpu_scanner_job -- set one scheduled job to scan cpu rate periodically
+
+(3) del_cpu_scanner_job -- delete the scheduled job
+
+
 # Install
 pip install cryptography APSCheduler SQLAlchemy
 pip install -U ray
 
 # run:
-## start ray cluster
+## start ray cluster manually
 
 reference:
 reference to  https://docs.ray.io/en/master/configure.html
 https://docs.ray.io/en/releases-0.8.5/using-ray-on-a-cluster.html
 
 
-start headnode
+### Start HeadNode
+
+Run Command
+
 ```
 ray start --head
 ```
@@ -46,30 +74,28 @@ Next steps
     ray stop
 ```
 
-Start workder node which may locate in a different machine.
+### Start workder node 
+
+That node can locate in a different machine.
+If you don't run this command, It's OK, because the head node has worker node as well.
+
+reference URL: https://docs.ray.io/en/master/cluster/index.html
+
 ```
 ray start --address='192.168.1.10:6379'
 ```
 
 
-## start fastapi server
+### start fastapi server
+
+run the following command
+```
+cd app
 uvicorn cpu_scanner:app --reload
+```
 
 Then go to browser, access the swagger page to test API:
 http://127.0.0.1:8000/docs
 
-
-
-## Description:
-To demostrating how to use fastapi and apscheduler
-
-Requirements:
-previde API to get CPU rate, and get it periodically
-
-(1) get_cpu_rate -- get current cpu rate by this call
-
-(2) set_cpu_scanner_job -- set one scheduled job to scan cpu rate periodically
-
-(3) del_cpu_scanner_job -- delete the scheduled job
 
 
