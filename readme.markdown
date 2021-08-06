@@ -1,17 +1,21 @@
 
-# ssl_check 
-## Reference
+# Purpose
+With the help of fastapi and apscheduler, implement API to get cpu rate and set periodical cpu scan.
+
+reference:
 https://ahaw021.medium.com/scheduled-jobs-with-fastapi-and-apscheduler-5a4c50580b0e
 
-## command
+# Install
 pip install cryptography APSCheduler SQLAlchemy
-uvicorn ssl_check:app
+pip install -U ray
 
+# run:
+## start ray cluster
 
-# cpu scanner
+reference:
+reference to  https://docs.ray.io/en/master/configure.html
+https://docs.ray.io/en/releases-0.8.5/using-ray-on-a-cluster.html
 
-## run:
-### start ray cluster
 
 start headnode
 ```
@@ -47,10 +51,8 @@ Start workder node which may locate in a different machine.
 ray start --address='192.168.1.10:6379'
 ```
 
-reference to  https://docs.ray.io/en/master/configure.html
-https://docs.ray.io/en/releases-0.8.5/using-ray-on-a-cluster.html
 
-### start fastapi server
+## start fastapi server
 uvicorn cpu_scanner:app --reload
 
 Then go to browser, access the swagger page to test API:
