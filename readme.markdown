@@ -31,8 +31,12 @@ previde API to get CPU rate, and get it periodically
 
 
 # Install
+
+run command
+```
 pip install cryptography APSCheduler SQLAlchemy
-pip install -U ray
+pip install -U ray[default]
+```
 
 # run:
 ## start ray cluster manually
