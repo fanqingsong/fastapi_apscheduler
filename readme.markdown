@@ -1,6 +1,6 @@
 
 # Purpose
-With the help of fastapi and apscheduler, implement API to get cpu rate and set periodical cpu scan.
+With the help of fastapi and apscheduler, implement API to get cpu rate and set/delete periodical cpu scan job.
 
 reference:
 https://ahaw021.medium.com/scheduled-jobs-with-fastapi-and-apscheduler-5a4c50580b0e
@@ -13,7 +13,7 @@ Select APScheduler as time policy manager.
 
 Select Ray as logic node to execute workload.
 
-The call from fastapi or apscheduler to ray cluster is asynchronous, so all the communication is reactive.
+The call from fastapi or apscheduler to ray cluster is asynchronous, so all the communication is reactive, no blocking status exists.
 
 ![components](pics/architect.png)
 
