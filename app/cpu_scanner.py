@@ -101,6 +101,13 @@ async def scan_cpu_rate(job_id):
 
     logging.info(future)
 
+    # with wait to prevent blocking status
+    # https://medium.com/distributed-computing-with-ray/ray-tips-and-tricks-part-i-ray-wait-9ed7a0b9836d
+    ids = [future]
+    ready, not_ready = ray.wait(ids)
+    print('Ready length, values: ', len(ready), ray.get(ready))
+    print('Not Ready length:', len(not_ready))
+
     cpu_rate = ray.get(future)
 
     logging.info(f"cpu_rate = {cpu_rate}")
@@ -110,6 +117,13 @@ def get_cpu_rate():
     future = get_cpu_rate_on_ray.remote()
 
     logging.info(future)
+
+    # with wait to prevent blocking status
+    # https://medium.com/distributed-computing-with-ray/ray-tips-and-tricks-part-i-ray-wait-9ed7a0b9836d
+    ids = [future]
+    ready, not_ready = ray.wait(ids)
+    print('Ready length, values: ', len(ready), ray.get(ready))
+    print('Not Ready length:', len(not_ready))
 
     cpu_rate = ray.get(future)
 
